@@ -1,0 +1,28 @@
+*, *::after, *::before{
+    margin: 0 0;
+    box-sizing: border-box;
+    font-family: montserrat;
+}
+h2{
+    color:rgba(220, 20, 60, 0.712);
+    padding: .5em;
+    border-bottom: 2px solid grey;
+  }
+h3{
+    color:rgba(220, 20, 60, 0.712);
+    padding: .2em;
+    border-bottom: 2px solid grey;
+  }
+  form{
+    padding-top: .3em;
+  }
+  .error{
+      margin: 0 auto;
+      background:rgba(220, 20, 60, 0.986);
+      font-size: 1rem;
+      max-width: fit-content;
+      padding: 1em 2em;
+      color: rgb(255, 255, 255);
+      border-radius: .4em;
+      text-align: center;
+  }
