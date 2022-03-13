@@ -9,7 +9,7 @@
         <li class="container logged-in" @click="modal('details')">
           Account Details
         </li>
-        <li class="container logged-in">Logout</li>
+        <li @click="logout" class="container logged-in">Logout</li>
       </ul>
     </header>
     <section>
@@ -34,29 +34,45 @@
         <div v-if="length">
           <div v-for="post in posts" :key="post" class="container">
             <h2>
-              {{ post.title }} 
-              <h6 v-if="!editMode" @click="toggleEditForm(post)" style="float:right; cursor:pointer; border:2px solid white;">Edit post</h6> 
-              <h6 v-if="post.edit" @click="toggleEditForm(post, 'cancel')" style="float:right; cursor:pointer; border:2px solid white;">Cancel edit</h6> 
+              {{ post.title }}
+              <h6
+                v-if="!editMode"
+                @click="toggleEditForm(post)"
+                style="float: right; cursor: pointer; border: 2px solid white"
+              >
+                Edit post
+              </h6>
+              <h6
+                v-if="post.edit"
+                @click="toggleEditForm(post, 'cancel')"
+                style="float: right; cursor: pointer; border: 2px solid white"
+              >
+                Cancel edit
+              </h6>
             </h2>
             <h4>Details: {{ post.details }}</h4>
             <!-- UpdateForm -->
-            <div v-show="post.edit" class="updateForm logged-in"> 
-            <h2>Update Document</h2>
-            <form @submit.prevent='update(post.id)' id="update">
-              <input type="text" placeholder="Title" name="title" id="title" />
-              <input
-                type="text"
-                placeholder="details"
-                name="details"
-                id="details"
-              />
-              <p><button>Update Doc</button></p>
-            </form>
-          </div> 
-          <!-- updateForm End -->
-          <div @click="del(post.id)">Delete post</div>
+            <div v-show="post.edit" class="updateForm logged-in">
+              <h2>Update Document</h2>
+              <form @submit.prevent="update(post.id)" id="update">
+                <input
+                  type="text"
+                  placeholder="Title"
+                  name="title"
+                  id="title"
+                />
+                <input
+                  type="text"
+                  placeholder="details"
+                  name="details"
+                  id="details"
+                />
+                <p><button>Update Doc</button></p>
+              </form>
+            </div>
+            <!-- updateForm End -->
+            <div @click="del(post.id)">Delete post</div>
           </div>
-          
         </div>
       </div>
     </section>
@@ -85,8 +101,9 @@ import {
   serverTimestamp,
   query,
   orderBy,
-  deleteDoc
+  deleteDoc,
 } from "firebase/firestore";
+import { signOut } from "firebase/auth";
 
 import { onBeforeMount, onMounted, ref } from "@vue/runtime-core";
 export default {
@@ -131,28 +148,25 @@ export default {
     },
 
     // toggleEditForm
-    toggleEditForm(post, com){
-      if(com ==='cancel')
-      {
-         alert('Toggle Function Hide')
-          post.edit = false
-          this.editMode = false
-          return
+    toggleEditForm(post, com) {
+      if (com === "cancel") {
+        alert("Toggle Function Hide");
+        post.edit = false;
+        this.editMode = false;
+        return;
       }
-      alert('Toggle Function Show')
-      post.edit = true
-      this.editMode = true
-    }
-
-    
+      alert("Toggle Function Show");
+      post.edit = true;
+      this.editMode = true;
+    },
   },
   beforeMount() {},
   mounted() {},
   setup() {
-    const length = ref(false)
+    const length = ref(false);
     const posts = ref([]);
     const colRef = collection(db, "posts");
-    const q = query(colRef,orderBy('createAt','asc'))
+    const q = query(colRef, orderBy("createAt", "asc"));
 
     //fetches documents from the firestore
     onSnapshot(q, (snap) => {
@@ -160,11 +174,11 @@ export default {
       snap.docs.forEach((doc) => {
         posts.value.push({ ...doc.data(), id: doc.id });
       });
-      length.value = true
+      length.value = true;
     });
 
     // selecting the addForm
-  // <- Add document
+    // <- Add document
     const add = () => {
       const addForm = document.querySelector("#add");
       const title = addForm.title.value;
@@ -173,11 +187,11 @@ export default {
       addDoc(colRef, {
         title,
         details,
-        createAt
+        createAt,
       }).then(() => {
-        addForm.reset()
-      })
-      alert(`Post ${title} created success`)
+        addForm.reset();
+      });
+      alert(`Post ${title} created success`);
     };
     // -> End of add document
 
@@ -186,32 +200,44 @@ export default {
       const updateForm = document.querySelector("#update");
       const title = updateForm.title.value;
       const details = updateForm.details.value;
-      alert('in function')
-      const editedAt = serverTimestamp()
-      const docRef = doc(colRef, id)
+      alert("in function");
+      const editedAt = serverTimestamp();
+      const docRef = doc(colRef, id);
       updateDoc(docRef, {
-        title, details, editedAt
-      }).then(()=>{
-        alert('Updated')
-        updateForm.reset()
-        this.editMode = false
-      })
-    }
+        title,
+        details,
+        editedAt,
+      }).then(() => {
+        alert("Updated");
+        updateForm.reset();
+        this.editMode = false;
+      });
+    };
     // -> End of update
 
     //<- Start of delete doc
-    const del =  (id)=>{
-        const docRef = doc(colRef, id)
-        
-        deleteDoc(docRef)
-        .then(()=>{
-          alert("Post Deleted")
-        })
-    }
+    const del = (id) => {
+      const docRef = doc(colRef, id);
+
+      deleteDoc(docRef).then(() => {
+        alert("Post Deleted");
+      });
+    };
     //<- End of delete doc
 
+    //the auth part
+    const logout = () => {
+      try {
+        signOut(auth);
+        alert("user signed out");
+        alert(cred.user)
+      } catch (error) {
+        alert(error.message);
+      }
+      
+    };
 
-    return { posts, add, length, update, del };
+    return { posts, add, length, update, del, logout };
   },
 };
 </script>

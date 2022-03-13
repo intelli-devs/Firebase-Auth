@@ -18,10 +18,10 @@ export default {
 }
 //
 
-// toggleEditForm
-    toggleEditForm(){
-      this.editMode = !this.editMode
-    }
+// // toggleEditForm
+//     toggleEditForm(){
+//       this.editMode = !this.editMode
+//     }
 
 
     // const update = (id) => {
