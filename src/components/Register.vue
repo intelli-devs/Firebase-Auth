@@ -1,5 +1,5 @@
 <template>
-<h2>{{header}}</h2>
+  <h2>{{ header }}</h2>
   <form id="SignUp">
     <input
       name="Signup_email"
@@ -24,7 +24,7 @@
 <script>
 import { ref } from "@vue/reactivity";
 export default {
-    name:'SignUp Form',
+  name: "SignUp Form",
   data() {
     return {
       header: "SignUp Form",
@@ -42,7 +42,3 @@ export default {
   },
 };
 </script>
-
-<style>
-
-</style>
