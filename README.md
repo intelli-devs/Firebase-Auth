@@ -1,4 +1,4 @@
-# router-template
+# Firebase firestore and auth
 
 ## Project setup
 ```
