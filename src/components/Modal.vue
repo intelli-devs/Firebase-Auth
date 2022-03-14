@@ -57,6 +57,8 @@ span {
   height: 100vh;
   top: 0;
   z-index: 1;
+  
+  
 }
 .content {
   margin: 5em auto;
@@ -65,11 +67,15 @@ span {
   box-shadow: 4px 2px 10px;
   background: rgb(231, 227, 227);
   position: absolute;
-  width: 70%;
+  width: 30ch;
   z-index: 2;
   top: 0;
   left: 0;
   right: 0;
   min-height: fit-content;
+  word-wrap: break-word;
+  /* word-break: break-all; */
+  overflow: hidden;
+  overflow: -moz-hidden-unscrollable;
 }
 </style>

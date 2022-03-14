@@ -17,6 +17,7 @@
 import { ref } from "@vue/reactivity";
 export default {
     name:'Admin Access',
+  
   data() {
     return {
       header: "Admin Acess",

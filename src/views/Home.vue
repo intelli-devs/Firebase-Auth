@@ -11,6 +11,7 @@
         </li>
         <li @click="logout" class="container logged-in">Logout</li>
       </ul>
+      {{ userCred.email }}
     </header>
     <section>
       <!-- add Form -->
@@ -28,7 +29,7 @@
         </form>
       </div>
 
-      <div class="viewDoc">
+      <div class="viewDoc logged-in">
         <h2>Post</h2>
         <div id="post"></div>
         <div v-if="length">
@@ -52,7 +53,7 @@
             </h2>
             <h4>Details: {{ post.details }}</h4>
             <!-- UpdateForm -->
-            <div v-show="post.edit" class="updateForm logged-in">
+            <div v-show="post.edit" class="updateForm">
               <h2>Update Document</h2>
               <form @submit.prevent="update(post.id)" id="update">
                 <input
@@ -76,18 +77,20 @@
         </div>
       </div>
     </section>
-    <Modal v-if="showModal" @close="close">
-      <Login v-if="loginModal"></Login>
-      <Register v-if="signupModal"></Register>
-      <Admin v-if="adminModal"></Admin>
+    <Modal class="{test:showModal}" v-if="showModal" @close="close">
+      <Login @close="close" v-if="loginModal"></Login>
+      <Register  @close="close"  v-if="signupModal"></Register>
+      <Admin  @close="close"  v-if="adminModal"></Admin>
+      <AccountDetails v-if="detailsModal" :user="userCred" />
     </Modal>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import Modal from "@/components/Modal.vue";
 import Login from "@/components/Login.vue";
+import AccountDetails from "@/components/AccountDetails.vue";
+import Modal from "@/components/Modal.vue";
 import Register from "@/components/Register.vue";
 import Admin from "@/components/Admin.vue";
 import { db, auth } from "@/firebase/index.js";
@@ -103,12 +106,13 @@ import {
   orderBy,
   deleteDoc,
 } from "firebase/firestore";
-import { signOut } from "firebase/auth";
+import { signOut, onAuthStateChanged } from "firebase/auth";
 
 import { onBeforeMount, onMounted, ref } from "@vue/runtime-core";
+// import AccountDetails from '../components/AccountDetails.vue';
 export default {
   name: "Home",
-  components: { Modal, Login, Register, Admin },
+  components: { Modal, Login, Register, Admin, AccountDetails },
   data() {
     return {
       showModal: false,
@@ -116,57 +120,97 @@ export default {
       signupModal: false,
       adminModal: false,
       editMode: false,
+      detailsModal: false,
       error: "",
+      water:true,
     };
   },
   methods: {
     modal(type) {
       this.showModal = true;
+
+      //this section disables scrolling
+      console.log('Try to hide overflow')
+      this.disableScrolling()
+
       switch (type) {
         case "login":
           this.signupModal = false;
           this.adminModal = false;
+          this.detailsModal = false;
           this.loginModal = true;
+
           break;
         case "signup":
+          this.detailsModal = false;
           this.adminModal = false;
           this.loginModal = false;
           this.signupModal = true;
           break;
         case "admin":
+          this.detailsModal = false;
           this.loginModal = false;
           this.signupModal = false;
           this.adminModal = true;
           break;
+        case "details":
+          this.loginModal = false;
+          this.signupModal = false;
+          this.adminModal = false;
+          this.detailsModal = true;
+          break;
       }
     },
+
+    // function to close modal
     close() {
       this.showModal = false;
       this.loginModal = false;
       this.signupModal = false;
       this.adminModal = false;
+      this.detailsModal = false;
+      this.enableScrolling()
     },
+    //enable scrolling
+    enableScrolling(){
+        document.body.classList.remove('stop-scrolling')
+    },
+
+    //disable scrolling
+    disableScrolling(){
+      document.body.classList.add('stop-scrolling')
+    }
+    ,
 
     // toggleEditForm
     toggleEditForm(post, com) {
       if (com === "cancel") {
-        alert("Toggle Function Hide");
         post.edit = false;
         this.editMode = false;
+        alert(`${post.edit} Toggle Function Hide`);
         return;
       }
-      alert("Toggle Function Show");
       post.edit = true;
       this.editMode = true;
+      alert(`${post.edit} Toggle Function show`);
     },
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    if(this.showModal){
+      console.log('Try to hide overflow')
+      const h = document.querySelector('.home')
+      const n = document.getElementById('home')
+      n.style.overflow = 'hidden'
+      h.style.overflow = 'hidden'
+    }
+  },
   setup() {
     const length = ref(false);
     const posts = ref([]);
     const colRef = collection(db, "posts");
     const q = query(colRef, orderBy("createAt", "asc"));
+    const userCred = ref({});
 
     //fetches documents from the firestore
     onSnapshot(q, (snap) => {
@@ -176,6 +220,21 @@ export default {
       });
       length.value = true;
     });
+
+    //authChange
+    onAuthStateChanged(auth, (user) => {
+      const loggedIn = document.querySelectorAll(".logged-in");
+      const loggedOut = document.querySelectorAll(".logged-out");
+      if (user) {
+        userCred.value = user;
+        loggedIn.forEach((item) => (item.style.display = "block"));
+        loggedOut.forEach((item) => (item.style.display = "none"));
+      } else {
+        loggedIn.forEach((item) => (item.style.display = "none"));
+        loggedOut.forEach((item) => (item.style.display = "block"));
+      }
+    });
+    //authchange
 
     // selecting the addForm
     // <- Add document
@@ -230,14 +289,13 @@ export default {
       try {
         signOut(auth);
         alert("user signed out");
-        alert(cred.user)
+        alert(cred.user);
       } catch (error) {
         alert(error.message);
       }
-      
     };
 
-    return { posts, add, length, update, del, logout };
+    return { posts, add, length, update, del, logout, userCred };
   },
 };
 </script>
@@ -280,5 +338,19 @@ span {
   border-radius: 80%;
   width: 2ch;
   cursor: pointer;
+}
+.logged-in {
+  display: none;
+}
+.logged-out {
+  display: none;
+}
+.stop-scrolling{
+  overflow: hidden;
+  overflow: -moz-hidden-unscrollable;
+}
+.test{
+  color: green;
+  background: rgb(33, 19, 160);
 }
 </style>

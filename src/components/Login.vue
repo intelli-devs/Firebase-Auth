@@ -19,7 +19,7 @@
       placeholder="Enter your password"
     />
     <p>Email: {{ email }} [] Password: {{ password }}</p>
-    <button class="btn">Login</button>
+    <button  class="btn">Login</button>
   </form>
 </template>
 
@@ -35,7 +35,7 @@ export default {
   },
   methods: {},
 
-  setup() {
+  setup(props, {emit}) {
     const email = ref("");
     const password = ref("");
     const login = () => {
@@ -44,6 +44,7 @@ export default {
         signInWithEmailAndPassword(auth, email.value, password.value)
           .then((cred) => {
             form.reset();
+            emit('close')
             alert(cred.user.email + " signedIn");
           })
           .catch((err) => {

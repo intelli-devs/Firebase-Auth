@@ -38,7 +38,7 @@ export default {
   },
   methods: {},
 
-  setup() {
+  setup(props, {emit}) {
     const email = ref("");
     const password = ref("");
     const signup = ()=>{
@@ -57,6 +57,7 @@ export default {
           })
           .then(()=>{
             alert( 'User Doc Created Successfully' )
+            emit('close', 'signup')
           })
           .catch(err =>{
             alert(`Error: ${err.message}` )
