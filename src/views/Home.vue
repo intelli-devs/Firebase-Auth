@@ -249,7 +249,9 @@ export default {
         createAt,
       }).then(() => {
         addForm.reset();
-      });
+      }).catch(err => {
+        alert(err.message)
+      })
       alert(`Post ${title} created success`);
     };
     // -> End of add document
