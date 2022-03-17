@@ -57,12 +57,12 @@ export default {
           })
           .then(()=>{
             alert( 'User Doc Created Successfully' )
-            emit('close', 'signup')
           })
           .catch(err =>{
             alert(`Error: ${err.message}` )
           } )
           signupForm.reset()
+          emit('close', 'signup')
         }).catch((err)=>{
           alert(err.message)
         })

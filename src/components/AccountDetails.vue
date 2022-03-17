@@ -20,7 +20,6 @@ export default {
   setup(props) {
     const userName = ref("");
     const bio = ref("");
-    props.user = null;
     if (props.user) {
       const uid = props.user.uid;
       onSnapshot(doc(db, "user", uid), (doc) => {
