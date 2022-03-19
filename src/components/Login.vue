@@ -3,22 +3,21 @@
     {{ header }}
   </h2>
   <form id="login" @submit.prevent="login">
-    <input
+    <div><input
       name="login_email"
       v-model="email"
       id="login_email"
       type="text"
       placeholder="Enter your email"
-    />
-    ....
-    <input
+    /></div>
+  
+    <div><input
       name="login_password"
       v-model="password"
       id="login_password"
-      type="text"
+      type="password"
       placeholder="Enter your password"
-    />
-    <p>Email: {{ email }} [] Password: {{ password }}</p>
+    /></div>
     <button  class="btn">Login</button>
   </form>
 </template>
@@ -26,6 +25,9 @@
 <script>
 import { ref } from "@vue/reactivity";
 import { auth } from "@/firebase";
+import {
+  showAlert, showError
+} from '@/firebase'
 import { signInWithEmailAndPassword } from "firebase/auth";
 export default {
   data() {
@@ -45,13 +47,13 @@ export default {
           .then((cred) => {
             form.reset();
             emit('close')
-            alert(cred.user.email + " signedIn");
+            showAlert(cred.user.email + " signedIn");
           })
           .catch((err) => {
-            alert(err.message);
+            showError(err.message);
           });
       } catch (error) {
-        alert(error.message);
+        showError(error.message);
       }
     };
     return {

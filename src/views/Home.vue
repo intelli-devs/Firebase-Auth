@@ -11,20 +11,19 @@
         </li>
         <li @click="logout" class="container logged-in">Logout</li>
       </ul>
-      {{ userCred.email }}
     </header>
     <section>
       <!-- add Form -->
-      <div class="logged-in">
+      <div class="logged-in updateSection">
         <h2>Add Document</h2>
         <form @submit.prevent="add" id="add">
-          <input type="text" placeholder="Title" name="title" id="title" />
-          <input
+         <div> <input type="text" placeholder="Title" name="title" id="title" /></div>
+          <div><input
             type="text"
             placeholder="details"
             name="details"
             id="details"
-          />
+          /></div>
           <p><button>Add Doc</button></p>
         </form>
       </div>
@@ -35,44 +34,45 @@
         <div v-if="length">
           <div v-for="post in posts" :key="post" class="container">
             <h2>
-              {{ post.title }}
-              <h6
+              <div class="head">
+                {{ post.title }}
+              <button class="yellow"
                 v-if="!editMode"
                 @click="toggleEditForm(post)"
                 style="float: right; cursor: pointer; border: 2px solid white"
               >
                 Edit post
-              </h6>
-              <h6
-                v-if="post.edit"
+              </button>
+              <button
+                v-show="post.edit"
                 @click="toggleEditForm(post, 'cancel')"
                 style="float: right; cursor: pointer; border: 2px solid white"
-              >
-                Cancel edit
-              </h6>
+              >Cancel edit
+              </button>
+              </div>
             </h2>
             <h4>Details: {{ post.details }}</h4>
             <!-- UpdateForm -->
             <div v-show="post.edit" class="updateForm">
               <h2>Update Document</h2>
               <form @submit.prevent="update(post.id)" id="update">
-                <input
+               <div> <input
                   type="text"
                   placeholder="Title"
                   name="title"
                   id="title"
-                />
-                <input
+                /></div>
+               <div> <input
                   type="text"
                   placeholder="details"
                   name="details"
                   id="details"
-                />
+                /></div>
                 <p><button>Update Doc</button></p>
               </form>
             </div>
             <!-- updateForm End -->
-            <div @click="del(post.id)">Delete post</div>
+            <button @click="del(post.id)">Delete post</button>
           </div>
         </div>
       </div>
@@ -84,16 +84,18 @@
       <AccountDetails v-if="detailsModal" :user="userCred" />
     </Modal>
   </div>
+  <Footer/>
 </template>
 
 <script>
 // @ is an alias to /src
 import Login from "@/components/Login.vue";
+import Footer from "@/components/Footer.vue";
 import AccountDetails from "@/components/AccountDetails.vue";
 import Modal from "@/components/Modal.vue";
 import Register from "@/components/Register.vue";
 import Admin from "@/components/Admin.vue";
-import { db, auth } from "@/firebase/index.js";
+import { db, auth, showAlert, showError } from "@/firebase/index.js";
 import {
   collection,
   onSnapshot,
@@ -112,7 +114,7 @@ import { onBeforeMount, onMounted, ref } from "@vue/runtime-core";
 // import AccountDetails from '../components/AccountDetails.vue';
 export default {
   name: "Home",
-  components: { Modal, Login, Register, Admin, AccountDetails },
+  components: { Modal, Login, Register, Admin, AccountDetails, Footer },
   data() {
     return {
       showModal: false,
@@ -187,13 +189,19 @@ export default {
       if (com === "cancel") {
         post.edit = false;
         this.editMode = false;
-        alert(`${post.edit} Toggle Function Hide`);
+        showAlert(`${post.edit} Toggle Function Hide`);
         return;
       }
       post.edit = true;
       this.editMode = true;
-      alert(`${post.edit} Toggle Function show`);
+      showAlert(`${post.edit} Toggle Function show`);
     },
+    show(){
+      showAlert()
+    },
+    showError(){
+      showError()
+    }
   },
   beforeMount() {},
   mounted() {
@@ -250,7 +258,7 @@ export default {
       }).then(() => {
         addForm.reset();
       });
-      alert(`Post ${title} created success`);
+      showAlert(`Post ${title} created success`)
     };
     // -> End of add document
 
@@ -259,7 +267,7 @@ export default {
       const updateForm = document.querySelector("#update");
       const title = updateForm.title.value;
       const details = updateForm.details.value;
-      alert("in function");
+      showAlert('In Edit mode')
       const editedAt = serverTimestamp();
       const docRef = doc(colRef, id);
       updateDoc(docRef, {
@@ -267,7 +275,7 @@ export default {
         details,
         editedAt,
       }).then(() => {
-        alert("Updated");
+        showAlert("Updated")
         updateForm.reset();
         this.editMode = false;
       });
@@ -279,7 +287,7 @@ export default {
       const docRef = doc(colRef, id);
 
       deleteDoc(docRef).then(() => {
-        alert("Post Deleted");
+          showAlert("Post Deleted")
       });
     };
     //<- End of delete doc
@@ -288,10 +296,9 @@ export default {
     const logout = () => {
       try {
         signOut(auth);
-        alert("user signed out");
-        alert(cred.user);
+        showAlert('user signed out')
       } catch (error) {
-        alert(error.message);
+        showError(error.message);
       }
     };
 
@@ -300,29 +307,48 @@ export default {
 };
 </script>
 <style>
+.updateSection{
+  background: rgba(0, 0, 255, 0.089);
+}
 .container {
   box-decoration-break: 2px solid grey;
   padding: 1rem;
-  border-right: 3px solid rgba(0, 0, 0, 0.322);
-  border-left: 3px solid rgba(0, 0, 0, 0.342);
-  background: rgba(192, 187, 187, 0.178);
+  /* border-right: 3px solid rgba(0, 0, 0, 0.322); */
+  border-left: 3px solid rgba(220, 20, 60, 0.712);
+  background: rgba(5, 19, 80, 0.178);
   gap: 2rem;
-  max-width: 40%;
-  min-width: 15ch;
+  max-width: 80%;
+  min-width: 20ch;
   text-align: center;
   line-height: 5ch;
 }
+.container:hover{
+  transition: all .3s;
+  border-left: none;
+  border-bottom: 2px solid #000;
+  color:wheat;
+  background: rgba(220, 20, 60, 0.712);
+  border-radius: .5rem 0;
+}
+.container:active{
+   border-radius: .5rem 0;
+  transition: all .4s;
+  border-left: none;
+  color:wheat;
+  background: rgba(15, 2, 5, 0.712);;
+}
 ul {
-  display: flex;
+  display: grid;
   justify-content: space-evenly;
-  align-items: center;
+  /* align-items: center; */
   list-style-type: none;
   background: rgba(0, 0, 0, 0.068);
   padding: 1em;
-  /* width: 80vw; */
 }
 li {
   cursor: pointer;
+  margin-top: 10px;
+  
 }
 .viewDoc .container {
   border: none;

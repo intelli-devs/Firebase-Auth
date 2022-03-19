@@ -1,9 +1,10 @@
+const notification = document.querySelector('.notification')
 import { initializeApp } from 'firebase/app'
 import {
-    getAuth
+    getAuth, getIdTokenResult, getUs
 } from 'firebase/auth'
 import {
-    getFirestore, collection, getDocs
+    getFirestore, collection, getDocs,
 } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -48,4 +49,35 @@ const firebaseConfig = {
 //       posts
 //   }
 //   export default posts
-export {db, auth}
+const showAlert = (data) => {
+    if(data){
+        notification.textContent = 'Default Context'
+        notification.innerHTML = 'In Default Content'
+    }
+    
+    notification.classList.remove('errorActive')
+    notification.textContent = data
+    notification.innerHTML = `${data}`
+    notification.classList.add('active')
+    setTimeout(()=>{
+        notification.classList.remove('active')
+        notification.textContent = ''
+    }, 2000)
+}
+const showError = (data) => {
+    if(data==undefined){
+    notification.textContent = 'Default Context'
+    notification.innerHTML = 'In Default Content'
+    }
+    notification.classList.remove('active')
+    notification.textContent = data
+    notification.innerHTML = `${data}`
+    notification.classList.add('errorActive')
+    setTimeout(()=>{
+        notification.classList.remove('errorActive')
+        notification.textContent = ''
+    }, 2000)
+}
+
+
+export {db, auth, showAlert, showError}

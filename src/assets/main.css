@@ -1,12 +1,92 @@
 *, *::after, *::before{
-    margin: 0 0;
     box-sizing: border-box;
     font-family: montserrat;
+    font-weight: 500;
 }
+
+body{
+  margin: 0;
+}
+.notification{
+  margin-left: -30%;
+  top: 0;
+  position: fixed;
+  z-index: 3;
+  width: 60%;
+  left: 50%;
+  height: fit-content;
+  word-break: break-all;
+  border-radius: 0 0 .5rem .5rem;
+  padding: .5rem 1rem;
+  margin-top: -120px;
+  transition: all .4s;
+
+}
+.notification.active{
+  background: green;
+  margin-top: 0;
+  padding: 1rem;
+  transition: all .4s;
+  color:whitesmoke
+}
+.notification.errorActive{
+  margin-top: 0;
+  padding: 1rem;
+  transition: all .4s;
+  background: crimson;
+  color:whitesmoke
+}
+
+
+input{
+  border: none;
+  padding: 1rem;
+  margin-bottom: .3rem;
+}
+input:focus{
+  transition: all .4s;
+  font-size: medium;
+}
+
+::-webkit-input-placeholder{
+  padding: .25rem;
+  border-bottom: 2px solid grey;
+}
+
+
+
+button{
+  text-decoration: none;
+  border: none;
+  background: rgba(0, 255, 64, 0.425);
+  padding: .5rem;
+  margin-bottom: .2rem;
+  border-radius: .5rem 0;
+  color: rgb(19, 19, 19);
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 800;
+  font-style: bold;
+  font-size: medium;
+  box-shadow: 0 0 1px;
+}
+button.yellow{
+  background: hsl(60, 73%, 47%);
+}
+.viewDoc .updateForm{
+  background: rgb(141, 139, 139);
+  transition: all .4s;
+}
+
 h2{
-    color:rgba(220, 20, 60, 0.712);
+  top: 0;
+  margin-top: 0;
+    color: rgba(220, 20, 60, 0.712);
     padding: .1em;
     border-bottom: 2px solid grey;
+  }
+  .viewDoc .head{
+    display: flex;
+    justify-content: space-between;
   }
 h3{
     color:rgba(220, 20, 60, 0.712);

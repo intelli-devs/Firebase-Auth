@@ -1,8 +1,9 @@
 <template>
   <h2>Account Details</h2>
   <ul style="display: block">
-    <li>User Name: {{ userName }}</li>
-    <li>Bio: {{ bio }}</li>
+    <li> User Name: <h2>{{ userName }}</h2></li>
+    <li> <Bio:h3></Bio:h3></li>
+    <li> Bio: <h3></h3></li>
   </ul>
 </template>
 
